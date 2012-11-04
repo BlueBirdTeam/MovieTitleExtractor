@@ -7,8 +7,11 @@ public class BracketsAreSick {
     //=======================================================================================//
     //                                                                           VARIABLES                                                                                 //
     //=======================================================================================//
-    
-    
+public enum Brackets {
+        PAR, BRACK
+    } 
+    private static char open = '(';
+    private static char close = ')';
     
     //=======================================================================================//
     //                                                                              METHODS                                                                                //
@@ -16,7 +19,21 @@ public class BracketsAreSick {
     
     //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     //----------Remove brackets and the text inside
-    public static ArrayList<String> removeBracketsAndText(ArrayList<String> list) {
+    public static ArrayList<String> remove(ArrayList<String> list, Brackets choice) {
+        
+        switch (choice) {
+            case PAR :
+                open = '(';
+                close = ')';
+                break;
+            case BRACK :
+                open = '[';
+                close = ']';
+                break;
+            default :
+                return null;
+        }
+        
         ArrayList result = new ArrayList<>();
         char[] chars;
         String temp, rem, sub1, sub2;
@@ -31,10 +48,10 @@ public class BracketsAreSick {
                 rem = "";
                 found = false;
                 //Look for the close bracket
-                if(chars[j] == '(') {                    
+                if(chars[j] == open) {                    
                     for(int k = j; k < chars.length; k++) {
                         rem += chars[k];
-                        if(chars[k] == ')') {
+                        if(chars[k] == close) {
                             found = true;
                             break;
                         }
@@ -48,7 +65,8 @@ public class BracketsAreSick {
                 }
                 //Else only remove backets
                 else {
-                    
+                    temp = temp.replace(open, ' ');
+                    temp = temp.replace(close, ' ');
                 }
             }
             //Add the title to the list of results, even if it has not been modified

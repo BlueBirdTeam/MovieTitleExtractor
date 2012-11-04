@@ -1,11 +1,15 @@
 package titleextractor;
 
+import java.awt.Color;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 
 public class TitleExtractor {
@@ -30,14 +34,17 @@ public class TitleExtractor {
             titlesList = CharReplacer.replace(titlesList, ".", " ");
             titlesList = CharReplacer.replace(titlesList, "_", " ");
 
-            //Remove brackets and text inside those
-            titlesList = BracketsAreSick.removeBracketsAndText(titlesList);
+            //Remove brackets/parenthesis and text inside those
+            titlesList = BracketsAreSick.remove(titlesList, BracketsAreSick.Brackets.PAR);
+            titlesList = BracketsAreSick.remove(titlesList, BracketsAreSick.Brackets.BRACK);
             
             //Remove double/triple spaces
             titlesList = CharReplacer.replace(titlesList, "  ", " ");
             titlesList = CharReplacer.replace(titlesList, "   ", " ");
             
         }
+        
+        writeResults(titlesList);
         
         for(int i = 0 ; i < titlesList.size() ; i++) {
             System.out.println(titlesList.get(i));
@@ -72,6 +79,34 @@ public class TitleExtractor {
         }
         
         return list;
+    }
+    
+    
+    //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    //----------Write a text file containing the results
+    public static void writeResults(ArrayList<String> list) {
+        FileOutputStream fos = null;
+        OutputStreamWriter osw = null;
+        BufferedWriter bw = null;
+        
+        try {
+            fos = new FileOutputStream(new File("TestFiles/Result1.txt"));
+            osw = new OutputStreamWriter(fos, "UTF-8");
+            bw = new BufferedWriter(osw);
+            for(int i = 0; i < list.size(); i++) {
+                bw.write(list.get(i) + "\r\n");
+            }            
+        } catch(Exception e) {
+            System.out.println("ERROR writing file : " + e.getMessage());
+        } finally {
+            try {                
+                bw.close();
+                osw.close();
+                fos.close();
+            } catch (IOException ex) {
+                System.out.println("ERROR while closing streams : " + ex.getMessage());
+            }
+        }
     }
 
 }
