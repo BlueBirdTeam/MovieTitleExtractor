@@ -7,9 +7,7 @@ public class BracketsAreSick {
     //=======================================================================================//
     //                                                                           VARIABLES                                                                                 //
     //=======================================================================================//
-public enum Brackets {
-        PAR, BRACK
-    } 
+    public enum Brackets {PAR, BRACK}
     private static char open = '(';
     private static char close = ')';
     

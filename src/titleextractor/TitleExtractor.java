@@ -1,6 +1,5 @@
 package titleextractor;
 
-import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.DataInputStream;
@@ -53,7 +52,7 @@ public class TitleExtractor {
     }
     
     //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-    //----------Read file and extract titles from it, constructing the array of titles
+    //----------Reads file and extract titles from it, constructing the array of titles
     public static ArrayList<String> getTitlesFromFile(File file) {
         FileInputStream fis;
         DataInputStream dis;
@@ -83,7 +82,7 @@ public class TitleExtractor {
     
     
     //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-    //----------Write a text file containing the results
+    //----------Writes a text file containing the results
     public static void writeResults(ArrayList<String> list) {
         FileOutputStream fos = null;
         OutputStreamWriter osw = null;
