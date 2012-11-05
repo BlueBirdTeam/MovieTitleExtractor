@@ -43,7 +43,6 @@ public class ExtensionsRemover {
             
             //Add extension to extensions list
             ext = reverseExt(ext).toLowerCase();
-            //System.out.println(ext);
             if(extensions.indexOf(ext) == -1) {
                 extensions.add(ext);
             }
