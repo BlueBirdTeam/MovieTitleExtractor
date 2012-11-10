@@ -29,25 +29,25 @@ public class TitleExtractor {
             //Remove files extensions
             titlesList = ExtensionsRemover.removeExtensions(titlesList);
             
-            //Replace the characters you want by invoking the CharReplacer.replace() method
-            titlesList = CharReplacer.replace(titlesList, ".", " ");
-            titlesList = CharReplacer.replace(titlesList, "_", " ");
+            //Replace the characters you want by invoking the CharsMaster.replace() method
+            titlesList = CharsMaster.replace(titlesList, ".", " ");
+            titlesList = CharsMaster.replace(titlesList, "_", " ");
 
             //Remove brackets/parenthesis and text inside those
             titlesList = BracketsAreSick.remove(titlesList, BracketsAreSick.Brackets.PAR);
             titlesList = BracketsAreSick.remove(titlesList, BracketsAreSick.Brackets.BRACK);
             
-            //Remove double/triple spaces
-            titlesList = CharReplacer.replace(titlesList, "  ", " ");
-            titlesList = CharReplacer.replace(titlesList, "   ", " ");
+            //Trim and move double/triple... spaces
+            titlesList = CharsMaster.trimPlusPlus(titlesList);
+            
+            //Remove 'commons words' using a known library
+            KnownWordsRemover.getInstance();
+            titlesList = KnownWordsRemover.removeCommons1(titlesList);
             
         }
         
+        //Write results in a text file
         writeResults(titlesList);
-        
-        for(int i = 0 ; i < titlesList.size() ; i++) {
-            System.out.println(titlesList.get(i));
-        }
         
     }
     
@@ -73,7 +73,7 @@ public class TitleExtractor {
                 list.add(line);
             }
         } catch (IOException ex) {
-            System.out.println("ERROR : " + ex.getMessage());
+            System.out.println("ERROR reading file : " + ex.getMessage());
             return null;
         }
         
@@ -93,6 +93,7 @@ public class TitleExtractor {
             osw = new OutputStreamWriter(fos, "UTF-8");
             bw = new BufferedWriter(osw);
             for(int i = 0; i < list.size(); i++) {
+                System.out.println("Writing ---> " + list.get(i));
                 bw.write(list.get(i) + "\r\n");
             }            
         } catch(Exception e) {

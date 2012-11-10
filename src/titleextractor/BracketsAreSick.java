@@ -41,12 +41,13 @@ public class BracketsAreSick {
         for(int i = 0; i < list.size(); i++) {
             temp = list.get(i).toLowerCase().trim();
             chars = temp.toCharArray();
-            //If an open bracket is found
+            //Test each character
             for(int j = 0; j < chars.length; j++) {
                 rem = "";
                 found = false;
-                //Look for the close bracket
-                if(chars[j] == open) {                    
+                //If an open bracket is found
+                if(chars[j] == open) {
+                    //Look for the close bracket
                     for(int k = j; k < chars.length; k++) {
                         rem += chars[k];
                         if(chars[k] == close) {
@@ -54,22 +55,22 @@ public class BracketsAreSick {
                             break;
                         }
                     }
-                }
-                //If the close backet has been found, then remove the text and the brackets
-                if(found) {
-                    sub1 = temp.substring(0, temp.indexOf(rem));
-                    sub2 = temp.substring(temp.indexOf(rem) + rem.length());
-                    temp = sub1 + sub2;
-                }
-                //Else only remove backets
-                else {
-                    temp = temp.replace(open, ' ');
-                    temp = temp.replace(close, ' ');
+                
+                    //If the close backet has been found, then remove the text and the brackets
+                    if(found) {
+                        sub1 = temp.substring(0, temp.indexOf(rem));
+                        sub2 = temp.substring(temp.indexOf(rem) + rem.length());
+                        temp = sub1 + " " + sub2;
+                    }
+                    //Else only remove backets
+                    else {
+                        temp = temp.replace(open, ' ');
+                        temp = temp.replace(close, ' ');
+                    }
                 }
             }
             //Add the title to the list of results, even if it has not been modified
-            result.add(temp.trim());           
-            
+            result.add(temp);
         }
         
         return result;
