@@ -1,6 +1,11 @@
 ﻿rip
-vo
+vostfr
 vost
+vo
 fr
 repack
 com
+dlmania
+fs
+svcd
+ts

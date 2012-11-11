@@ -75,5 +75,45 @@ public class BracketsAreSick {
         
         return result;
     }
+    
+    //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    //----------Remove dashes and text inside depending on places and number of occurences
+    public static ArrayList<String> removeDashes(ArrayList<String> list) {
+        ArrayList<String> results = new ArrayList<>();
+        String temp, sub1, sub2;
+        ArrayList<Integer> indexes;
+        char[] chars;        
+        
+        for(int i = 0; i < list.size(); i++) {
+            temp = list.get(i);
+            chars = temp.toCharArray();
+            indexes = new ArrayList<>();
+            
+            for(int j = 0; j < chars.length ; j++) {
+                if(chars[j] == '-') {
+                    indexes.add(j);
+                }
+            }
+            
+            if(indexes.size() > 0) {
+                if(indexes.get(0) == 0) {
+                    indexes.remove(0);
+                }
+                if(indexes.size() > 0) {
+                    if(indexes.size() == 1) {
+                        temp = temp.substring(0, indexes.get(0));
+                    } else {
+                        sub1 = temp.substring(0, indexes.get(0));
+                        sub2 = temp.substring(indexes.get(indexes.size() - 1) + 1);
+                        temp = sub1 + sub2;
+                    }
+                }
+            }
+            //Add title to results list
+            results.add(temp);
+        }
+        
+        return results;
+    }
 
 }

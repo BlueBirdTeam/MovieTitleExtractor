@@ -6,7 +6,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class KnownWordsRemover {
     
@@ -17,12 +20,15 @@ public class KnownWordsRemover {
     //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     //----------Text Files containing known words to remove
     private static ArrayList<String> commons1;
+    private static ArrayList<String> locals1;
                                                     //-----> words that have been recognized as 'ending words' (ex : 'donnie brasco dvdrip fr-dlmania'
                                                     //-----> everything after and including 'dvdrip' can be removed)                                                    
     private static ArrayList<String> commons2;
+    private static ArrayList<String> locals2;
                                                     //-----> 'lonely' words (means that these words will only be removed 
                                                     //-----> if they are placed between spaces or any other separator)                                                    
     private static ArrayList<String> commons3;     
+    private static ArrayList<String> locals3;     
                                                     //-----> 'special words' that have a special comportement and will be treated with a
                                                     //-----> particular algorithm (ex : 'cd' is often concatenated with a number [1cd, 2cd...])
                                                     //-----> THE CORRESPONDING FILE MUST ONLY CONTAINS REGEXPS   
@@ -40,6 +46,7 @@ public class KnownWordsRemover {
     // This class respects singleton pattern, 'self' is its unique instance
     private static KnownWordsRemover self = null;
     
+    //Lists of characters that are considered as separators
     private static char[] separators;
     
     //=======================================================================================//
@@ -51,8 +58,8 @@ public class KnownWordsRemover {
         
         separators = new char[3];
         separators[0] = ' ';
-        separators[0] = '-';
-        separators[0] = '/';
+        separators[1] = '-';
+        separators[2] = '/';
     }
     
     public static KnownWordsRemover getInstance() {
@@ -94,45 +101,85 @@ public class KnownWordsRemover {
     //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     //----------
     public static ArrayList<String> removeCommons2(ArrayList<String> list) {
+        ArrayList<ArrayList<String>> commons = new ArrayList<>();
+        commons.add(commons2);
+        commons.add(locals2);
+        
         ArrayList<String> results = new ArrayList<>();
+        
         String temp, comm, sub1, sub2;
         char[] chars;
         int index;
+        boolean found;
         
+        //For each title in the list
         for(int i = 0; i < list.size(); i++) {
             temp = list.get(i);
             chars = temp.toCharArray();
-            for(int j = 0; j < commons2.size(); j++) {
-                comm = commons2.get(j);
-                index = temp.indexOf(comm);
-                if(index >= 0) { //If word has been found
-                    if(index > 0 && (index + comm.length()) < temp.length()) { //Word is inside the string
-                        if(isSeparator(temp.charAt(index - 1)) && isSeparator(temp.charAt(index + comm.length()))) { //If word is surround by separators
-                            sub1 = temp.substring(0, index);
-                            sub2 = temp.substring(index + comm.length());
-                            temp = sub1 + sub2;                        
+            //For each common word in each commons2 libraries
+            for(int c = 0; c < commons.size(); c++) {
+                for(int j = 0; j < commons.get(c).size(); j++) {
+                    comm = commons.get(c).get(j);
+                    index = 0;
+                    found = false;
+                    //If text is found
+                    if(temp.indexOf(comm) != -1) {
+                        found = true;
+                    }
+                    //While ocurrences...
+                    while(found) {
+                        index = temp.indexOf(comm, index);
+
+                        if(index > 0 && index < temp.length() - comm.length()) { //Text is inside
+                            if(isSeparator(temp.charAt(index - 1)) && isSeparator(temp.charAt(index + comm.length()))) {
+                                sub1 = temp.substring(0, index);
+                                sub2 = temp.substring(index + comm.length());
+                                temp = sub1 + sub2;
+                            }                        
+                        } else if(index == 0) { //Text is at begin
+                            if(isSeparator(temp.charAt(index + comm.length()))) {
+                                temp = temp.substring(index + comm.length());            
+                            }
+                        } else if(index == temp.length() - comm.length()) { //Text is at end
+                            if(isSeparator(temp.charAt(index - 1))) {
+                                temp = temp.substring(0, index);
+                            }
                         }
-                    } else if(index == 0) { //Word is starting string
-                        if(isSeparator(temp.charAt(comm.length() + 1))) {
-                            temp = temp.substring(comm.length());
-                        }
-                    } else if((index + comm.length()) == temp.length()) { //Word is ending string
-                        if(isSeparator(temp.charAt(index - 1))) {
-                            temp = temp.substring(0, temp.length() - comm.length());
+
+                        //If text has next next occurence
+                        index = temp.indexOf(comm, index + comm.length());
+                        if(index == -1) {
+                            found = false;
                         }
                     }
-                }                
+                }
             }
+            //Add title to results list, even if it has not been modified
             results.add(temp);
         }
+               
         
         
         return results;
         
     }
     
+    //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    //----------
     public static ArrayList<String> removeCommons3(ArrayList<String> list) {
         ArrayList<String> results = new ArrayList<>();
+        String temp;
+        
+        for(int i = 0; i < list.size(); i++) {
+            temp = list.get(i);
+            for(int j = 0; j < commons3.size(); j++) {
+                String pattern;
+                pattern = commons3.get(j);
+                temp = temp.replaceAll(pattern, "﻿");
+            }
+            
+            results.add(temp);
+        }
         
         
         return results;
@@ -144,12 +191,15 @@ public class KnownWordsRemover {
     
     
     //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-    //---------- Loads 'commons' files (if you need to load more than 3 files, please change the code to match files count)
+    //---------- Loads 'commons' files (if you need to load more files, please change the code to match files count)
     private static void loadLibraries() {
-        File[] files = new File[3];
+        File[] files = new File[6];
         files[0] = new File("Ressources/commons1.txt");
         files[1] = new File("Ressources/commons2.txt");
         files[2] = new File("Ressources/commons3.txt");
+        files[3] = new File("Ressources/LocalCommons1.txt");
+        files[4] = new File("Ressources/LocalCommons2.txt");
+        files[5] = new File("Ressources/LocalCommons3.txt");
         
         ArrayList<ArrayList<String>> commons = new ArrayList<>();
         
@@ -158,14 +208,14 @@ public class KnownWordsRemover {
         InputStreamReader isr;
         BufferedReader br;
         
-        for(int i = 0; i < 3; i++) {
+        for(int i = 0; i < 6; i++) {
             String line;
             ArrayList<String> list = new ArrayList<>();
 
             try {
                 fis = new FileInputStream(files[i]);
                 dis = new DataInputStream(fis);
-                isr = new InputStreamReader(dis);
+                isr = new InputStreamReader(dis, "UTF-8");
                 br = new  BufferedReader(isr);
 
                 //Read file line by line and add string to list
@@ -183,6 +233,10 @@ public class KnownWordsRemover {
         commons1 = commons.get(0);
         commons2 = commons.get(1);
         commons3 = commons.get(2);
+        locals1 = commons.get(3);
+        locals2 = commons.get(4);
+        locals3 = commons.get(5);
+        
     }
     
     //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

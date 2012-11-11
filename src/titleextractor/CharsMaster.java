@@ -1,5 +1,6 @@
 package titleextractor;
 
+import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -26,12 +27,14 @@ public class CharsMaster {
     
     //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     //----------Replace String.class trim() method AND also removes multiple whitespaces
+    //----------This method can also remove begining/ending dashes if parameter 'plus' has true value
     //-----> For unknown reasons, a special unicode char (65279) blocks native str.trim() method, it has been recoded
-    public static ArrayList<String> trimPlusPlus(ArrayList<String> list) {
+    public static ArrayList<String> trimPlusPlus(ArrayList<String> list, boolean plus) {
         ArrayList<String> results = new ArrayList<>();
         String temp;
         char[] chars;
         int count;
+        boolean redo, found;
         
         for(int i = 0; i < list.size(); i++) {
             chars = list.get(i).toCharArray();
@@ -72,6 +75,58 @@ public class CharsMaster {
             temp = temp.replaceAll(" +", " ");       
             
             //-------------->Add the result to results list           
+            results.add(temp);
+        }
+        
+        if(plus) {
+            redo = false;
+            for(int i = 0; i < results.size(); i++) {
+                temp = results.get(i);
+                found = false;
+                if(temp.charAt(0) == '-') {
+                    found = true;
+                    if(!redo) {
+                        redo = true;
+                    }
+                    temp = temp.substring(1);
+                }
+                if(temp.charAt(temp.length() - 1) == '-') {
+                    found = true;
+                    if(!redo) {
+                        redo = true;
+                    }
+                    temp = temp.substring(0, temp.length() - 1);
+                }
+                if(found) {
+                    results.set(i, temp);
+                }
+            }
+            if(redo) {
+                trimPlusPlus(results, true);
+            }
+        }
+        
+        return results;
+    }
+    
+    //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    //----------Removes/replaces all diacritics
+    public static ArrayList<String> removeDiacritics(ArrayList<String> list) {
+        ArrayList<String> results = new ArrayList<>();
+        String temp;
+        char[] chars;
+        for(int i = 0; i < list.size(); i++) {
+            temp = list.get(i);
+            chars = temp.toCharArray();
+            
+            for(int j = 0; j < chars.length; j++) {
+                char[] c = Normalizer.normalize(String.valueOf(chars[j]), Normalizer.Form.NFD).toCharArray();
+                if(c.length > 1) {
+                    chars[j] = c[0];
+                }
+            }
+            
+            temp = new String(chars);
             results.add(temp);
         }
         

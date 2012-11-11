@@ -32,17 +32,34 @@ public class TitleExtractor {
             //Replace the characters you want by invoking the CharsMaster.replace() method
             titlesList = CharsMaster.replace(titlesList, ".", " ");
             titlesList = CharsMaster.replace(titlesList, "_", " ");
+            
+            //Remove diacritics
+            titlesList = CharsMaster.removeDiacritics(titlesList);
 
-            //Remove brackets/parenthesis and text inside those
+            //Remove brackets/parenthesis/dashes and text inside those
             titlesList = BracketsAreSick.remove(titlesList, BracketsAreSick.Brackets.PAR);
-            titlesList = BracketsAreSick.remove(titlesList, BracketsAreSick.Brackets.BRACK);
+            titlesList = BracketsAreSick.remove(titlesList, BracketsAreSick.Brackets.BRACK);                      
             
-            //Trim and move double/triple... spaces
-            titlesList = CharsMaster.trimPlusPlus(titlesList);
-            
-            //Remove 'commons words' using a known library
+            //Get KnownWordsRemover instance (load libraries)
             KnownWordsRemover.getInstance();
+            
+            //Remove commons1
+            titlesList = CharsMaster.trimPlusPlus(titlesList, false);
             titlesList = KnownWordsRemover.removeCommons1(titlesList);
+            
+            //Remove dashes and text inside those
+            titlesList = BracketsAreSick.removeDashes(titlesList);
+            
+            //Remove commons2
+            titlesList = CharsMaster.trimPlusPlus(titlesList, false);
+            titlesList = KnownWordsRemover.removeCommons2(titlesList);
+            
+            //Remove commons3
+            titlesList = CharsMaster.trimPlusPlus(titlesList, false);
+            titlesList = KnownWordsRemover.removeCommons3(titlesList);           
+            
+            //Trim and remove double/triple... spaces to get proper final results
+            titlesList = CharsMaster.trimPlusPlus(titlesList, true);
             
         }
         
@@ -65,7 +82,7 @@ public class TitleExtractor {
         try {
             fis = new FileInputStream(file);
             dis = new DataInputStream(fis);
-            isr = new InputStreamReader(dis);
+            isr = new InputStreamReader(dis, "UTF-8");
             br = new  BufferedReader(isr);
             
             //Read file line by line and add titles to the titles list
@@ -89,11 +106,11 @@ public class TitleExtractor {
         BufferedWriter bw = null;
         
         try {
-            fos = new FileOutputStream(new File("TestFiles/Result1.txt"));
+            fos = new FileOutputStream(new File("TestFiles/Result11.txt"));
             osw = new OutputStreamWriter(fos, "UTF-8");
             bw = new BufferedWriter(osw);
             for(int i = 0; i < list.size(); i++) {
-                System.out.println("Writing ---> " + list.get(i));
+                //System.out.println("Writing ---> " + list.get(i));
                 bw.write(list.get(i) + "\r\n");
             }            
         } catch(Exception e) {
