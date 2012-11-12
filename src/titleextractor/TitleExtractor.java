@@ -106,7 +106,7 @@ public class TitleExtractor {
         BufferedWriter bw = null;
         
         try {
-            fos = new FileOutputStream(new File("TestFiles/Result11.txt"));
+            fos = new FileOutputStream(new File("TestFiles/Result1.txt"));
             osw = new OutputStreamWriter(fos, "UTF-8");
             bw = new BufferedWriter(osw);
             for(int i = 0; i < list.size(); i++) {
