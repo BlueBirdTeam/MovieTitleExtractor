@@ -1,7 +1,8 @@
-﻿rip
 vostfr
 vost
 vo
+tvrip
+tv
 fr
 repack
 com
@@ -9,3 +10,4 @@ dlmania
 fs
 svcd
 ts
+rip

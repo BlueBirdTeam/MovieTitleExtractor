@@ -19,7 +19,7 @@ public class TitleExtractor {
     public static void main(String[] args) {
        
         //Change here the file you want to test
-        file = new File("TestFiles/test1.txt");
+        file = new File("TestFiles/test2.txt");
         
         //Extract titles from file and fill the array
         titlesList = getTitlesFromFile(file);
@@ -27,7 +27,7 @@ public class TitleExtractor {
         //DO EVERYTHING YOU NEED WITH THE TITLES
         if(titlesList != null) {
             //Remove files extensions
-            titlesList = ExtensionsRemover.removeExtensions(titlesList);
+            //titlesList = ExtensionsRemover.removeExtensions(titlesList);
             
             //Replace the characters you want by invoking the CharsMaster.replace() method
             titlesList = CharsMaster.replace(titlesList, ".", " ");
@@ -106,7 +106,7 @@ public class TitleExtractor {
         BufferedWriter bw = null;
         
         try {
-            fos = new FileOutputStream(new File("TestFiles/Result1.txt"));
+            fos = new FileOutputStream(new File("TestFiles/Result2.txt"));
             osw = new OutputStreamWriter(fos, "UTF-8");
             bw = new BufferedWriter(osw);
             for(int i = 0; i < list.size(); i++) {
